@@ -3,35 +3,21 @@
 \usepackage{amsmath}
 \usepackage{geometry}
 
-
-
 \geometry{top=1in, bottom=1in, left=1in, right=1in}
-
-
 
 \title{Project Proposal: Fashion Image Classification System with CNN}
 \author{}
 \date{}
 
-
-
 \begin{document}
 
-
-
 \maketitle
-
-
 
 \section*{Topic:}
 Fashion Image Classification System with Convolutional Neural Network (CNN)
 
-
-
 \section*{Aim:}
 The aim of this project is to develop a machine learning model that classifies images of fashion items into broad categories (such as Apparel, Footwear, Accessories, etc.) with a high degree of accuracy.
-
-
 
 \section*{Dataset:}
 We will use the Fashion Product Images Dataset from Kaggle: \\
@@ -42,12 +28,8 @@ The dataset contains images of fashion products along with their respective cate
     \item \textbf{Labels:} A CSV file \texttt{styles.csv} containing labels for each product.
 \end{itemize}
 
-
-
 \section*{Model:}
 Convolutional Neural Network (CNN) will be used for this project due to its effectiveness in image classification tasks. We will also consider leveraging pretrained models such as ResNet or EfficientNet to improve classification accuracy and reduce training time.
-
-
 
 \subsection*{Approach:}
 \textbf{Preprocessing:}
@@ -57,15 +39,11 @@ Convolutional Neural Network (CNN) will be used for this project due to its effe
     \item Apply data augmentation techniques (e.g., rotations, flips, color jittering) to artificially increase the dataset size and improve model robustness.
 \end{itemize}
 
-
-
 \textbf{Model Architecture:}
 \begin{itemize}
     \item Start with a simple CNN architecture (Convolutional layers + pooling + fully connected layers).
     \item Optionally, employ transfer learning using pretrained models like ResNet or EfficientNet for feature extraction, followed by fine-tuning on the fashion dataset.
 \end{itemize}
-
-
 
 \textbf{Training and Evaluation:}
 \begin{itemize}
@@ -74,12 +52,8 @@ Convolutional Neural Network (CNN) will be used for this project due to its effe
     \item Fine-tune the model with data augmentation techniques and evaluate using metrics such as accuracy, precision, and recall.
 \end{itemize}
 
-
-
 \textbf{Prediction:}
 The model will predict the category for each fashion item based on the input image.
-
-
 
 \section*{Metrics:}
 To evaluate the performance of our fashion image classification model, we will use the following metrics:
@@ -97,12 +71,7 @@ To evaluate the performance of our fashion image classification model, we will u
     \item \textbf{Confusion Matrix:} A confusion matrix will also be generated to better understand misclassifications between different categories.
 \end{itemize}
 
-
-
 \section*{Plan and Timeline:}
-
-
-
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Phase} & \textbf{Description} & \textbf{Duration} \\
@@ -121,12 +90,8 @@ Final Testing and Reporting & Test the model on a separate test set and prepare 
 \hline
 \end{tabular}
 
-
-
 \section*{Resources:}
 \textbf{Hardware:} A high-performance personal computer or GPU instance will be used for training. If necessary, additional cloud-based GPUs can be employed.
-
-
 
 \textbf{Software Libraries:}
 \begin{itemize}
@@ -138,8 +103,13 @@ Final Testing and Reporting & Test the model on a separate test set and prepare 
     \item Matplotlib (For data visualization)
 \end{itemize}
 
-
-
 \section*{Contributions:}
-Each team member focuses on the following responsibilities, but we act and work together as a team first and 
- 
+Each team member focuses on the following responsibilities, but we act and work together as a team first and foremost:
+\begin{itemize}
+    \item \textbf{Team Member 1:} Responsible for data preprocessing and augmentation, setting up the CNN model, and managing training and validation.
+    \item \textbf{Team Member 2:} Focus on experimenting with pretrained models (ResNet, EfficientNet) and applying transfer learning techniques to improve performance.
+    \item \textbf{Team Member 3:} Handle model evaluation, performance metrics (accuracy, F1-score, precision, recall), and fine-tuning the model for optimal performance.
+    \item \textbf{Team Member 4:} Responsible for data preprocessing and augmentation.
+\end{itemize}
+
+\end{document}
