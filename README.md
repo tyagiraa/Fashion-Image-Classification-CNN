@@ -32,6 +32,13 @@ https://drive.google.com/drive/folders/1lcWTM20INcwPhcz8qRwTJBcUpIdm0Tom
 
 And open runtime on the notebook of your choosing. 
 
+You will need to set up your auth_token with Kaggle if this is your first time using Kaggle:
+
+```
+https://www.kaggle.com/docs/api#authentication
+```
+When prompted by the runtime, please upload your json so that the runtime can proceed with downloading data from the web.
+
 
 ## Expected Outputs
 
