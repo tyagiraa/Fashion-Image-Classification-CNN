@@ -35,7 +35,44 @@ And open runtime on the notebook of your choosing.
 
 ## Expected Outputs
 
-See the results that are already present when you first opened the notebook.
+Performance metrics on the small dataset (Subcategory)
+
+Model, Accuracy, F1 Score (Macro)
+
+ResNet18, 0.9649, 0.7766
+
+EfficientNetB0, 0.9655, 0.7763
+
+Performance metrics on the large dataset (Subcategory)
+
+ResNet18, 0.9626, 0.7973
+
+EfficientNetB0, 0.9682, 0.8164
+
+Performance metrics on the small dataset (Master Category)
+
+ResNet18, 0.9701, 0.8245
+
+EfficientNetB0, 0.9712, 0.8264
+
+Performance metrics on the large dataset (Master Category)
+
+ResNet18, 0.9735, 0.8517
+
+EfficientNetB0, 0.9768, 0.8689
+
+Performance metrics on the small dataset (Season)
+
+ResNet18, 0.8523, 0.8415
+
+EfficientNetB0, 0.8547, 0.8432
+
+Performance metrics on the large dataset (Season)
+
+ResNet18, 0.8732, 0.8653
+
+EfficientNetB0, 0.8795, 0.8738
+
 
 ## Acknowledgments
 
