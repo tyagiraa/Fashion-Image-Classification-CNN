@@ -26,13 +26,12 @@ https://drive.google.com/drive/folders/1lcWTM20INcwPhcz8qRwTJBcUpIdm0Tom
 
 And open runtime on the notebook of your choosing. 
 
-You will need to set up your auth_token with Kaggle if this is your first time using Kaggle:
-
+To run projects in Google Colab, you need to provide the notebook with your API credentials, stored in kaggle.json.
+If this is your first time using Kaggle, refer to this link:
 ```
-https://www.kaggle.com/docs/api#authentication
+https://www.kaggle.com/docs/api
 ```
 When prompted by the runtime, please upload your json so that the runtime can proceed with downloading data from the web.
-
 
 ## Expected Outputs
 
