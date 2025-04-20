@@ -1,8 +1,5 @@
 # Fashion Image Classification Using CNNs
 
-Google Colab link:
-https://drive.google.com/drive/folders/1lcWTM20INcwPhcz8qRwTJBcUpIdm0Tom
-
 ## Project Description
 
 This project implements and evaluates Convolutional Neural Networks (CNNs) for fashion image classification. We use ResNet18 and EfficientNetB0 architectures to classify fashion product images into 45 subcategories including Topwear, Bottomwear, Watches, Shoes, etc. 
@@ -18,9 +15,6 @@ We used the Fashion Product Images Dataset from Kaggle:
 
 The only difference is in the resolution of the images. For the large dataset, The full resolution is 2400x1600; while for small dataset, it is usually less than 100x100.
 
-## Models on HuggingFace
-
-To be completed
 
 
 ## Running the project
@@ -80,6 +74,18 @@ ResNet18, 0.8732, 0.8653
 
 EfficientNetB0, 0.8795, 0.8738
 
+## HuggingFace Model Links
+
+Models for the subcategory, master category, and season category classifications:
+
+Subcategory:
+https://huggingface.co/spaces/KiritoYH/6140_Sub
+
+Master category:
+https://huggingface.co/spaces/KiritoYH/6140_Mas
+
+Season category:
+https://huggingface.co/spaces/KiritoYH/6140_Season
 
 ## Acknowledgments
 
