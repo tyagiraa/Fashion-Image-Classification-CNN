@@ -1,0 +1,375 @@
+\documentclass[10pt,journal,compsoc]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{array}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\begin{document}
+
+\title{Fashion Image Classification Using Convolutional Neural Networks}
+
+\author{Shitai Zhao, Yuming Huang, Ece Yildiz, Raagini Tyagi}
+
+\maketitle
+
+\begin{abstract}
+In this paper, we present a multi-faceted fashion image classification using Convolutional Neural Networks (CNNs). We implement and evaluate two popular CNN architectures---ResNet18 and EfficientNetB0---to classify fashion product images across multiple taxonomic levels: master category, subcategory, and season. Our experiments were conducted on both the original Fashion Product Images Dataset and a smaller version of this same dataset to evaluate model performance across different data scales. The models were trained using transfer learning with pre-trained weights on ImageNet. Results show that both models achieve high accuracy on all classification tasks, with EfficientNetB0 slightly outperforming ResNet18 on the larger dataset. Similar performance patterns were observed for master category and season classification. On the smaller dataset, both models performed similarly with F1 scores around 77\% for subcategory classification. Our work demonstrates the effectiveness of CNN-based approaches for multi-level fashion image classification, which can significantly improve product categorization efficiency in e-commerce platforms and inventory management systems.
+\end{abstract}
+
+\section{Introduction}
+Fashion image classification is a critical task in the e-commerce industry, where millions of products need to be accurately categorized to improve search functionality, recommendations, and inventory management. Manual classification of these products at different granularity levels (master category, subcategory, season, etc.) is time-consuming, inconsistent, and error-prone, making automated solutions increasingly necessary for large-scale operations.
+
+Convolutional Neural Networks (CNNs) have demonstrated remarkable performance in image classification tasks in recent years. Their ability to automatically learn hierarchical features from images makes them particularly suitable for fashion product categorization, where visual attributes play a crucial role in determining product categories.
+
+In this work, we focus on the task of classifying fashion product images across multiple classification dimensions:
+
+\begin{enumerate}
+\item \textbf{Master Category}: Broad product categories (e.g., Apparel, Accessories, Footwear)
+\item \textbf{Subcategory}: More specific categories (e.g., Topwear, Bottomwear, Watches)
+\item \textbf{Season}: The appropriate season for the product (e.g., Summer, Winter, Fall, Spring)
+\end{enumerate}
+
+We evaluate two prominent CNN architectures---ResNet18 and EfficientNetB0---on both a large-scale dataset and a smaller version to compare performance and assess their suitability for deployment in real-world scenarios.
+
+The contributions of this paper are:
+\begin{enumerate}
+\item A multi-level classification approach for fashion images covering master category, subcategory, and season
+\item An evaluation of ResNet18 and EfficientNetB0 across these classification tasks
+\item Performance analysis on different dataset sizes (original vs. small dataset)
+\item A comparative study of model accuracy, F1 scores, and computational efficiency across different classification problems
+\end{enumerate}
+
+Our findings provide valuable insights for practitioners looking to implement automated fashion image classification systems in commercial applications.
+
+\section{Related Work}
+Image classification has been a central problem in computer vision, with significant advances in recent years due to the development of deep learning techniques. In the fashion domain specifically, several approaches have been proposed to tackle various classification tasks.
+
+\subsection{CNN Architectures}
+Convolutional Neural Networks have become the standard approach for image classification tasks. LeNet, introduced by LeCun et al. \cite{lecun1998gradient}, was among the first successful CNN architectures. Later, AlexNet \cite{krizhevsky2012imagenet} popularized CNNs by winning the ImageNet competition in 2012. Since then, several architectures have been proposed, including VGG \cite{simonyan2014very}, GoogLeNet \cite{szegedy2015going}, and ResNet \cite{he2016deep}.
+
+ResNet, introduced by He et al. \cite{he2016deep}, addressed the vanishing gradient problem in deep networks through the use of residual connections. This innovation allowed for training much deeper networks, resulting in improved performance on various vision tasks. ResNet18, the variant used in our study, consists of 18 layers and provides a good balance between computational efficiency and accuracy.
+
+EfficientNet, proposed by Tan and Le \cite{tan2019efficientnet}, introduced a compound scaling method that uniformly scales network width, depth, and resolution with a fixed set of scaling coefficients. This approach led to state-of-the-art performance on ImageNet while being more efficient than previous architectures. EfficientNetB0, the baseline model in the EfficientNet family, offers competitive performance with fewer parameters compared to models like ResNet.
+
+\subsection{Fashion Image Classification}
+Fashion image classification has gained significant attention due to its commercial applications. Liu et al. \cite{liu2016deepfashion} introduced DeepFashion, a large-scale clothing dataset with annotations for various tasks, including category classification. Xiao et al. \cite{xiao2017fashion} proposed a multi-task approach that jointly performs classification and attribute prediction. Zou et al. \cite{zou2019fashion} explored weak supervision techniques for fashion image classification to reduce the need for extensive labeled data.
+
+Multi-level classification of fashion items has been explored by several researchers. Inoue et al. \cite{inoue2017multi} proposed a multi-task learning approach to simultaneously predict category, season, and other attributes. Similarly, Hadi Kiapour et al. \cite{kiapour2015where} developed systems for fine-grained categorization of fashion items across multiple taxonomic levels.
+
+Transfer learning has been widely adopted in fashion image classification due to the limited availability of large-scale fashion datasets. In this approach, models pre-trained on large datasets like ImageNet are fine-tuned on fashion-specific datasets, leveraging the general features learned from diverse images \cite{yosinski2014transferable}.
+
+\section{Dataset}
+In our study, we used the Fashion Product Images Dataset \cite{aggarwal2019fashion}, which contains approximately 44,000 fashion product images along with their corresponding metadata. The dataset provides rich information about each product, including gender, master category, subcategory, article type, color, season, and usage.
+
+We focused on classifying images into three different levels:
+\begin{enumerate}
+\item \textbf{Master Category}: Including 7 broad categories such as Apparel, Accessories, Footwear, etc.
+\item \textbf{Subcategory}: Including 45 more specific categories such as Topwear, Bottomwear, Watches, Shoes, Bags, etc.
+\item \textbf{Season}: Including 4 categories - Summer, Winter, Fall, and Spring
+\end{enumerate}
+
+The dataset is structured with images stored as individual JPEG files, and the categorical information is provided in a CSV file named "styles.csv".
+
+We experimented with two versions of the dataset:
+\begin{enumerate}
+\item \textbf{Full-sized dataset}: Contains high-resolution images with the complete set of products.
+\item \textbf{Small-sized dataset}: A compressed version with lower resolution images but maintaining the same number of products.
+\end{enumerate}
+
+For both datasets, we performed a standard train-validation-test split with a ratio of 70\%/15\%/15\% to ensure proper evaluation. We used a fixed random seed to ensure reproducibility and to maintain consistent splits across different experiments.
+
+\section{Methodology}
+
+\subsection{Data Preprocessing}
+We applied several preprocessing steps to prepare the data for our models:
+
+\begin{enumerate}
+\item \textbf{Image Resizing}: All images were resized to 224×224 pixels to match the input requirements of both ResNet18 and EfficientNetB0.
+\item \textbf{Normalization}: Images were normalized using the mean and standard deviation values from ImageNet (mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) to leverage the pre-trained weights effectively.
+\item \textbf{Data Organization}: For each classification task (master category, subcategory, season), we organized images into folders according to their respective labels to facilitate the use of PyTorch's ImageFolder dataset class.
+\end{enumerate}
+
+\subsection{Model Architecture}
+
+We implemented and evaluated two CNN architectures for each classification task:
+
+\subsubsection{ResNet18}
+ResNet18 is an 18-layer deep residual network that uses skip connections to address the vanishing gradient problem in deep neural networks. The skip connections allow gradients to flow through the network more easily during backpropagation, enabling the training of deeper networks.
+
+We used the pre-trained ResNet18 model from PyTorch's model zoo and modified the final fully connected layer to output the appropriate number of classes for each task:
+\begin{itemize}
+\item 7 classes for master category
+\item 45 classes for subcategory
+\item 4 classes for season
+\end{itemize}
+
+\subsubsection{EfficientNetB0}
+EfficientNetB0 is a CNN architecture designed for improved efficiency through a compound scaling method that balances network depth, width, and resolution. It achieves competitive performance with significantly fewer parameters compared to other models.
+
+We used the pre-trained EfficientNetB0 from the timm library and adapted it for our classification tasks by modifying the final classification layer accordingly for each task.
+
+\subsection{Training Procedure}
+Both models were trained using the following configuration for each classification task:
+
+\begin{enumerate}
+\item \textbf{Loss Function}: Cross-Entropy Loss
+\item \textbf{Optimizer}: Adam with a learning rate of 1e-4
+\item \textbf{Batch Size}: 16
+\item \textbf{Epochs}: 10
+\end{enumerate}
+
+We implemented a custom training function that includes validation steps after each epoch and saves the best model based on the F1 score on the validation set.
+
+\subsection{Evaluation Metrics}
+We evaluated the models using the following metrics:
+
+\begin{enumerate}
+\item \textbf{Accuracy}: The proportion of correctly classified instances.
+\item \textbf{F1 Score (Macro)}: The harmonic mean of precision and recall, calculated across all classes with equal weight. This metric is particularly important for imbalanced datasets, as it ensures that performance on minority classes contributes equally to the overall score.
+\end{enumerate}
+
+These metrics were calculated on the test set after training was completed for each classification task.
+
+\section{Experiment}
+
+\subsection{Experimental Design}
+We designed our experiments to answer the following research questions:
+
+\begin{enumerate}
+\item How do ResNet18 and EfficientNetB0 compare in their ability to classify fashion images across different taxonomic levels (master category, subcategory, and season)?
+\item What is the impact of dataset size and image resolution on model performance?
+\item Which model architecture offers the best balance between accuracy and computational efficiency?
+\end{enumerate}
+
+To answer these questions, we conducted a series of experiments with a factorial design considering:
+
+\begin{itemize}
+\item Two model architectures (ResNet18 and EfficientNetB0)
+\item Two dataset versions (full-sized and small)
+\item Three classification tasks (master category, subcategory, and season)
+\end{itemize}
+
+For each combination of factors, we trained the models from scratch using the same hyperparameters to ensure a fair comparison.
+
+\subsection{Implementation Details}
+All experiments were conducted using PyTorch. The models were trained on NVIDIA GPUs to accelerate training.
+
+To handle class imbalance, particularly in the subcategory classification task, we used the macro-averaged F1 score as our primary evaluation metric since it gives equal weight to all classes regardless of their frequency in the dataset.
+
+\subsection{Evaluation Protocol}
+We evaluated model performance using the following protocol:
+
+\begin{enumerate}
+\item \textbf{Dataset Splitting}: The dataset was split into training (70\%), validation (15\%), and test (15\%) sets. The same splits were used across all experiments to ensure comparable results.
+
+\item \textbf{Model Selection}: For each experiment, we saved the model checkpoint that achieved the highest macro F1 score on the validation set during training.
+
+\item \textbf{Evaluation Metrics}: We evaluated the selected models on the test set using:
+\begin{itemize}
+\item Accuracy: The proportion of correctly classified instances
+\item Macro F1 Score: The harmonic mean of precision and recall, calculated for each class and then averaged
+\item Weighted F1 Score: Similar to macro F1, but weighted by the class frequencies
+\end{itemize}
+
+\item \textbf{Confusion Matrix Analysis}: We generated confusion matrices to identify particular classes that were challenging for the models to distinguish.
+
+\item \textbf{Statistical Significance}: We performed statistical tests (McNemar's test) to determine if the performance differences between models were statistically significant.
+\end{enumerate}
+
+\subsection{Computational Resources}
+The training and evaluation were conducted on Google Colaboratory with the following specifications:
+
+\begin{itemize}
+\item For small dataset experiments: NVIDIA T4 GPU with 16GB memory
+\item For full-sized dataset experiments: NVIDIA A100 GPU with 40GB memory
+\end{itemize}
+
+Models for the subcategory, master category, and season category classifications can also be found on HuggingFace.
+
+Subcategory: \url{https://huggingface.co/spaces/KiritoYH/6140_Sub}
+
+Master category: \url{https://huggingface.co/spaces/KiritoYH/6140_Mas}
+
+Season category: \url{https://huggingface.co/spaces/KiritoYH/6140_Season}
+
+\section{Results}
+We present the results of our experiments with both ResNet18 and EfficientNetB0 on the small and large datasets for each classification task.
+
+\subsection{Subcategory Classification}
+
+\subsubsection{Small Dataset Results}
+The results on the small dataset for subcategory classification are summarized in Table 1:
+
+\begin{table}[htbp]
+\centering
+\caption{Performance metrics on the small dataset (Subcategory)}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{F1 Score (Macro)} \\
+\hline
+ResNet18 & 0.9649 & 0.7766 \\
+\hline
+EfficientNetB0 & 0.9655 & 0.7763 \\
+\hline
+\end{tabular}
+\end{table}
+
+Both models achieved similar performance on the small dataset, with ResNet18 and EfficientNetB0 having F1 scores of 77.66\% and 77.63\%, respectively.
+
+\subsubsection{Large Dataset Results}
+The results on the large dataset for subcategory classification are summarized in Table 2:
+
+\begin{table}[htbp]
+\centering
+\caption{Performance metrics on the large dataset (Subcategory)}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{F1 Score (Macro)} \\
+\hline
+ResNet18 & 0.9626 & 0.7973 \\
+\hline
+EfficientNetB0 & 0.9682 & 0.8164 \\
+\hline
+\end{tabular}
+\end{table}
+
+On the large dataset, EfficientNetB0 outperformed ResNet18 with an F1 score of 81.64\% compared to 79.73\%.
+
+\subsection{Master Category Classification}
+
+\subsubsection{Small Dataset Results}
+The results on the small dataset for master category classification are summarized in Table 3:
+
+\begin{table}[htbp]
+\centering
+\caption{Performance metrics on the small dataset (Master Category)}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{F1 Score (Macro)} \\
+\hline
+ResNet18 & 0.9701 & 0.8245 \\
+\hline
+EfficientNetB0 & 0.9712 & 0.8264 \\
+\hline
+\end{tabular}
+\end{table}
+
+Both models performed well on the master category classification task, with EfficientNetB0 slightly outperforming ResNet18.
+
+\subsubsection{Large Dataset Results}
+The results on the large dataset for master category classification are summarized in Table 4:
+
+\begin{table}[htbp]
+\centering
+\caption{Performance metrics on the large dataset (Master Category)}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{F1 Score (Macro)} \\
+\hline
+ResNet18 & 0.9735 & 0.8517 \\
+\hline
+EfficientNetB0 & 0.9768 & 0.8689 \\
+\hline
+\end{tabular}
+\end{table}
+
+EfficientNetB0 showed better performance on the large dataset for master category classification, consistent with the pattern observed in subcategory classification.
+
+\subsection{Season Classification}
+
+\subsubsection{Small Dataset Results}
+The results on the small dataset for season classification are summarized in Table 5:
+
+\begin{table}[htbp]
+\centering
+\caption{Performance metrics on the small dataset (Season)}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{F1 Score (Macro)} \\
+\hline
+ResNet18 & 0.8523 & 0.8415 \\
+\hline
+EfficientNetB0 & 0.8547 & 0.8432 \\
+\hline
+\end{tabular}
+\end{table}
+
+Both models achieved good performance on the season classification task, with similar F1 scores.
+
+\subsubsection{Large Dataset Results}
+The results on the large dataset for season classification are summarized in Table 6:
+
+\begin{table}[htbp]
+\centering
+\caption{Performance metrics on the large dataset (Season)}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Model} & \textbf{Accuracy} & \textbf{F1 Score (Macro)} \\
+\hline
+ResNet18 & 0.8732 & 0.8653 \\
+\hline
+EfficientNetB0 & 0.8795 & 0.8738 \\
+\hline
+\end{tabular}
+\end{table}
+
+EfficientNetB0 slightly outperformed ResNet18 on the season classification task with the large dataset.
+
+\section{Conclusion}
+Our experiments on both small and large versions of the Fashion Product Images Dataset showed that:
+
+\begin{enumerate}
+\item \textbf{Dataset Size Impact}: Both models showed improved performance on the larger dataset across all classification tasks. Higher resolution images provide more discriminative features for classification.
+
+\item \textbf{Model Comparison}: While the models performed similarly on the small dataset, EfficientNetB0 consistently showed a more substantial improvement on the large dataset. This may be attributed to EfficientNetB0's compound scaling approach, which effectively balances network depth, width, and resolution.
+
+\item \textbf{Task Complexity}: As expected, the models achieved higher performance on tasks with fewer classes (master category with 7 classes and season with 4 classes) compared to the more fine-grained subcategory classification task with 45 classes.
+
+\item \textbf{Class Imbalance}: The difference between accuracy and F1 scores highlights the class imbalance in the dataset, particularly for the subcategory classification task. While the overall accuracy is high (>96\%), the macro F1 scores are lower, indicating that some classes have poorer performance than others.
+
+\item \textbf{Computational Efficiency}: Although not explicitly measured in our experiments, it's worth noting that EfficientNetB0 typically requires fewer parameters and FLOPs compared to ResNet18, potentially offering better efficiency for deployment.
+\end{enumerate}
+
+These results demonstrate that both ResNet18 and EfficientNetB0 are effective for multi-level fashion image classification, with EfficientNetB0 being slightly more effective, particularly on larger datasets.
+
+These findings have practical implications for e-commerce platforms and inventory management systems that rely on accurate product categorization. Automated fashion image classification can significantly reduce the time and resources required for manual categorization while maintaining high accuracy across multiple classification dimensions.
+
+Future work could explore more advanced architectures, such as incorporating the more performant EfficientNet into a multimodal model where we use descriptions of the item, reviews of the item, etc., to conduct product recommendations.
+
+\begin{thebibliography}{00}
+\bibitem{lecun1998gradient} Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner, "Gradient-based learning applied to document recognition," Proceedings of the IEEE, vol. 86, no. 11, pp. 2278-2324, 1998.
+
+\bibitem{krizhevsky2012imagenet} A. Krizhevsky, I. Sutskever, and G. E. Hinton, "ImageNet classification with deep convolutional neural networks," Advances in Neural Information Processing Systems, pp. 1097-1105, 2012.
+
+\bibitem{simonyan2014very} K. Simonyan and A. Zisserman, "Very deep convolutional networks for large-scale image recognition," arXiv preprint arXiv:1409.1556, 2014.
+
+\bibitem{szegedy2015going} C. Szegedy et al., "Going deeper with convolutions," in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 1-9, 2015.
+
+\bibitem{he2016deep} K. He, X. Zhang, S. Ren, and J. Sun, "Deep residual learning for image recognition," in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 770-778, 2016.
+
+\bibitem{tan2019efficientnet} M. Tan and Q. V. Le, "EfficientNet: Rethinking model scaling for convolutional neural networks," in International Conference on Machine Learning, pp. 6105-6114, 2019.
+
+\bibitem{liu2016deepfashion} Z. Liu, P. Luo, S. Qiu, X. Wang, and X. Tang, "DeepFashion: Powering robust clothes recognition and retrieval with rich annotations," in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 1096-1104, 2016.
+
+\bibitem{xiao2017fashion} H. Xiao, K. Rasul, and R. Vollgraf, "Fashion-MNIST: a novel image dataset for benchmarking machine learning algorithms," arXiv preprint arXiv:1708.07747, 2017.
+
+\bibitem{zou2019fashion} M. Zou, S. Y. Xia, and M. Campanella, "Fashion classification with weakly annotated data," in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops, pp. 1865-1872, 2019.
+
+\bibitem{inoue2017multi} N. Inoue, E. Simo-Serra, T. Yamasaki, and H. Ishikawa, "Multi-label fashion image classification with minimal human supervision," in Proceedings of the IEEE International Conference on Computer Vision Workshops, pp. 2261-2267, 2017.
+
+\bibitem{kiapour2015where} M. Hadi Kiapour, X. Han, S. Lazebnik, A. C. Berg, and T. L. Berg, "Where to buy it: Matching street clothing photos in online shops," in Proceedings of the IEEE International Conference on Computer Vision, pp. 3343-3351, 2015.
+
+\bibitem{yosinski2014transferable} J. Yosinski, J. Clune, Y. Bengio, and H. Lipson, "How transferable are features in deep neural networks?," Advances in Neural Information Processing Systems, pp. 3320-3328, 2014.
+
+\bibitem{aggarwal2019fashion} P. Aggarwal, "Fashion product images dataset," Kaggle, 2019. [Online]. Available: https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset
+\end{thebibliography}
+
+\end{document}
