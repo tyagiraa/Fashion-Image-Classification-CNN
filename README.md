@@ -19,6 +19,8 @@ The only difference is in the resolution of the images. For the large dataset, T
 
 ## Running the project
 
+The copies of Google Colab notebooks in this repo is for reference only. This project is built with the Google Colab environment.
+
 Open the Google Colab link:
 ```
 https://drive.google.com/drive/folders/1lcWTM20INcwPhcz8qRwTJBcUpIdm0Tom
